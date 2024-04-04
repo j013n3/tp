@@ -78,6 +78,8 @@ public class WorkoutList extends ArrayList<Workout> {
             throw new CustomExceptions.OutOfBounds(ErrorConstant.HISTORY_GYM_EMPTY_ERROR);
         }
 
+
+
         if(filter.equals(WorkoutConstant.RUN)){
             return RUNS;
         } else if (filter.equals(WorkoutConstant.GYM)) {

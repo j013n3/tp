@@ -58,6 +58,7 @@ public class Gym extends Workout {
      * @return The desired GymStation object.
      */
     public ArrayList<GymStation> getStations() {
+
         return stations;
     }
 

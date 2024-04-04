@@ -172,7 +172,6 @@ Tracks the start and end of user's menstrual cycle.
 
 Format: `health /h:period /start:START_DATE /end:END_DATE`
 
-* All parameters must be provided in correct order as shown above.
 * `START_DATE` is `DD-MM-YYYY` format (i.e. `19-03-2024`) representing the start of a cycle.
 * `END_DATE` is `DD-MM-YYYY` format (i.e. `19-03-2024`) representing the end of a cycle.
 
@@ -208,6 +207,31 @@ Your next cycle's predicted start date is 2024-04-08, in 7 days.
 ```
 
 ### Health: Appointment
+
+###### [Back to table of contents](#table-of-contents)
+
+### Health: Appointment
+
+Tracks the user's medical appointments.
+
+Format: `health /h:appointment /date:DATE /time:TIME /description:DESCRIPTION`
+
+* All parameters must be provided in correct order as shown above.
+* `DATE` is a `DD-MM-YYYY` format (i.e. `03-04-2024`) representing the date of the appointment.
+* `TIME` is a `HH:mm` format (i.e. `14:15`) representing the time of the appointment.
+* `DESCRIPTION` is a string (i.e. `review checkup with surgeon`) representing the details of the appointment. The string can only contain alphanumeric characters and spaces.
+
+Examples:
+* `health /h:appointment /date:03-04-2024 /time:14:15 /description:review checkup with surgeon`
+
+Expected Output:
+```
+health /h:appointment /date:03-04-2024 /time:14:15 /description:review checkup with surgeon
+____________________________________________________________
+Added: appointment | 2024-04-03 | 14:15 | review checkup with surgeon
+On 2024-04-03 at 14:15: review checkup with surgeon
+____________________________________________________________
+```
 
 ###### [Back to table of contents](#table-of-contents)
 

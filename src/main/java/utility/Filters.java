@@ -43,4 +43,13 @@ public class Filters {
         APPOINTMENT,
         WORKOUTS
     }
+
+    public enum DataType {
+        BMI,
+        APPOINTMENT,
+        PERIOD,
+        GYM,
+        RUN
+    }
+
 }

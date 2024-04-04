@@ -21,6 +21,7 @@ import workouts.Run;
 import workouts.Workout;
 import utility.CustomExceptions;
 import constants.UiConstant;
+import utility.Filters.DataType;
 
 /**
  * Represents a DataFile object used to read and write data stored in PulsePilot to a file.
@@ -189,8 +190,13 @@ public class DataFile {
         String time = input[2].trim(); // time
         String formattedTime = time.replace(".", ":");
         String date = input[3].trim(); // 3 is date
-        new Run(formattedTime, distance, date);
+        if (date.equals(ErrorConstant.NO_DATE_SPECIFIED_ERROR)) {
+            new Run(formattedTime, distance);
+        } else {
+            new Run(formattedTime, distance, date);
+        }
     }
+
     public static void processGym(String rawInput)
             throws CustomExceptions.InvalidInput, CustomExceptions.FileReadError {
         Parser.parseGymFileInput(rawInput);
