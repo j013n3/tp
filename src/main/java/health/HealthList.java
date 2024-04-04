@@ -15,22 +15,22 @@ public class HealthList extends ArrayList<Health> {
 
     /**
      * LogFile for logging health-related activities.
-     * */
+     */
     static LogFile logFile = LogFile.getInstance();
 
     /**
      * The list of Bmi records.
-     * */
+     */
     private static final ArrayList<Bmi> BMIS = new ArrayList<>();
 
     /**
      * The list of Appointment records.
-     * */
+     */
     private static final ArrayList<Appointment> APPOINTMENTS = new ArrayList<>();
 
     /**
      * The list of Period records.
-     * */
+     */
     private static final ArrayList<Period> PERIODS = new ArrayList<>();
 
 
@@ -110,7 +110,7 @@ public class HealthList extends ArrayList<Health> {
     }
 
     /**
-     * Prints the latest three Period objects from the periods list.
+     * Prints the latest three Period objects from the list of periods.
      */
     public static void printLatestThreeCycles() {
         int size = PERIODS.size();
