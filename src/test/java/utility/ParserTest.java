@@ -102,7 +102,7 @@ class ParserTest {
      */
     @Test
     void splitPeriodInput_missingParameter_throwsInsufficientInputException() {
-        String input = "/h:period /start:29-04-2023";
+        String input = "/h:period /end:29-04-2023";
         assertThrows(CustomExceptions.InsufficientInput.class, () -> Parser.splitPeriodInput(input));
     }
 
