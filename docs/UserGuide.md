@@ -163,9 +163,13 @@ Calculates user's Body Mass Index (BMI) based on height and weight from user's i
 Format: `health /h:bmi /height:HEIGHT /weight:WEIGHT /date:DATE`
 
 * Parameters after `health` can be in any order. 
+
 * `HEIGHT` is a **2 decimal point number in metres** (i.e. `1.71`) representing the user's height.
+
 * `WEIGHT` is a **2 decimal point number in kilograms** (i.e. `60.50`) representing the user’s weight.
+
 * `DATE` is in `DD-MM-YYYY` format (i.e. `19-03-2024`).
+
 
 Examples:
 * `health /h:bmi /height:1.70 /weight:75.42 /date:19-03-2024`
@@ -196,15 +200,20 @@ ___
 
 Tracks the start and end of user's menstrual cycle.
 
-Format: `health /h:period /start:START_DATE /end:END_DATE`
+Format: `health /h:period /start:START_DATE [/end:END_DATE]`
 
 * Parameters after `health` can be in any order.
-* `START_DATE` is `DD-MM-YYYY` format (i.e. `19-03-2024`) representing the first day of period flow which is also the first day of the cycle.
-* `END_DATE` is `DD-MM-YYYY` format (i.e. `19-03-2024`) representing the last day of period flow.
+
+* `START_DATE` is `DD-MM-YYYY` format (i.e. `19-03-2024`) representing the first day of period flow which is also the first day of the cycle. This parameter needs to be present at all times (i.e. inputting a new period input or adding in end date).
+
+* `END_DATE` is `DD-MM-YYYY` format (i.e. `19-03-2024`) representing the last day of period flow. This parameter is optional and can be input once the period flow ends. To add an end date, you need to input the correct corresponding start date of the period.
+
+**Warning:** Every period input needs to include a start date and end date before adding a new period input. 
 
 Examples:
 * `health /h:period /start:09-03-2022 /end:16-03-2022`
 * `health /start:09-03-2022 /end:16-03-2022 /h:period`
+* `health /h:period /start:09-03-2022`
 
 Expected Output:
 ```
@@ -220,7 +229,9 @@ Predicts user's next period start date.
 
 Format: `health /h:prediction`
 
-* All parameters must be provided in the correct order.
+* All parameters must be provided in the correct order. 
+
+**Warning:** At least **four period inputs** must be present before PulsePilot can make a prediction.
 
 Expected Output:
 ```
@@ -380,7 +391,7 @@ Commands List:
 workout /e:run /d:DISTANCE /t:TIME [/date:DATE] - Add a new run
 workout /e:gym /n:NUMBER_OF_STATIONS [/date:DATE] - Add a new gym workout
 health /h:bmi /height:HEIGHT /weight:WEIGHT /date:DATE - Add new BMI data
-health /h:period /start:START_DATE /end:END_DATE - Add new period data
+health /h:period /start:START_DATE [/end:END_DATE] - Add new period data
 health /h:prediction - Predicts next period's start date
 health /h:appointment /date:DATE /time:TIME /description:DESCRIPTION - Add new appointment data
 history /item:[run/gym/bmi/period] - Shows history of runs/gyms/bmi records/periods tracked/appointment records
