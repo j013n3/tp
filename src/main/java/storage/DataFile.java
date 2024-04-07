@@ -290,8 +290,13 @@ public class DataFile {
     public static void processPeriod(String[] input) {
         String startDate = input[1].trim(); // start
         String endDate = input[2].trim(); // end, skip 3 duration
-        Period period = new Period(startDate, endDate);
-        HealthList.addPeriod(period);
+        if (endDate.equals(ErrorConstant.NO_DATE_SPECIFIED_ERROR)) {
+            Period period = new Period(startDate);
+            HealthList.addPeriod(period);
+        } else {
+            Period period = new Period(startDate, endDate);
+            HealthList.addPeriod(period);
+        }
     }
 
     /**

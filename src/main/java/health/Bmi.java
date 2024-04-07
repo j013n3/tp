@@ -131,7 +131,7 @@ public class Bmi extends Health {
             return HealthConstant.SEVERELY_OBESE_MESSAGE;
         }
     }
-
+    
     /**
      * Returns the string presentation of a Bmi object.
      *

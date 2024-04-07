@@ -43,9 +43,9 @@ public class Parser {
 
     /**
      * Parses and converts String date to a LocalDate variable.
+     *
      * @param date String representing the date.
      * @return LocalDate variable representing the date.
-     *
      * @throws DateTimeParseException If there is an error parsing the date.
      */
     public static LocalDate parseDate(String date) {
@@ -61,9 +61,9 @@ public class Parser {
 
     /**
      * Converts a LocalDate object to a formatted String representation.
+     *
      * @param date LocalDate object representing the date.
      * @return Formatted String representation of the date in the format "dd-MM-yyyy".
-     *
      * @throws DateTimeParseException If there is an error parsing the date.
      */
     public static String parseFormattedDate(LocalDate date) {
@@ -81,9 +81,9 @@ public class Parser {
 
     /**
      * Parses and converts String time to a LocalDate variable.
+     *
      * @param stringTime String representing the time.
      * @return LocalTime variable representing the time.
-     *
      * @throws DateTimeParseException If there is an error parsing the time.
      */
     public static LocalTime parseTime(String stringTime) throws DateTimeParseException {
@@ -142,6 +142,7 @@ public class Parser {
     }
 
     //@@author JustinSoh
+
     /**
      * Function validates and parses the user input for the history and latest commands.
      *
@@ -186,6 +187,7 @@ public class Parser {
     }
 
     //@@author syj02
+
     /**
      * Split user input for Bmi command, height, weight and date.
      *
@@ -206,7 +208,7 @@ public class Parser {
             throw new CustomExceptions.InvalidInput(ErrorConstant.TOO_MANY_SLASHES_ERROR);
         }
 
-        String [] results = new String[HealthConstant.NUM_BMI_PARAMETERS];
+        String[] results = new String[HealthConstant.NUM_BMI_PARAMETERS];
         results[HealthConstant.BMI_HEIGHT_INDEX] = extractSubstringFromSpecificIndex(input,
                 HealthConstant.HEIGHT_FLAG).trim();
         results[HealthConstant.BMI_WEIGHT_INDEX] = extractSubstringFromSpecificIndex(input,
@@ -226,13 +228,26 @@ public class Parser {
      */
     public static void parsePeriodInput(String userInput) throws CustomExceptions.InvalidInput,
             CustomExceptions.InsufficientInput {
+        int size = HealthList.getPeriodSize();
         String[] periodDetails = splitPeriodInput(userInput);
         Validation.validatePeriodInput(periodDetails);
-        Period newPeriod = new Period(
-                periodDetails[HealthConstant.PERIOD_START_DATE_INDEX],
-                periodDetails[HealthConstant.PERIOD_END_DATE_INDEX]);
-        HealthList.addPeriod(newPeriod);
-        Output.printAddPeriod(newPeriod);
+
+        if (userInput.contains(HealthConstant.START_FLAG) && userInput.contains(HealthConstant.END_FLAG)) {
+            if ((size == 0) || (size > 0 && HealthList.getPeriod(size-1).getEndDate() != null)) {
+                Period newPeriod = new Period(
+                        periodDetails[HealthConstant.PERIOD_START_DATE_INDEX],
+                        periodDetails[HealthConstant.PERIOD_END_DATE_INDEX]);
+                HealthList.addPeriod(newPeriod);
+                Output.printAddPeriod(newPeriod);
+            } else if (size > 0 && HealthList.getPeriod(size-1).getEndDate() == null) {
+                HealthList.getPeriod(size - 1).updateEndDate(periodDetails[1]);
+                Output.printAddPeriod(HealthList.getPeriod(size - 1));
+            }
+        } else if (userInput.contains(HealthConstant.START_FLAG)) {
+            Period newPeriod = new Period(periodDetails[HealthConstant.PERIOD_START_DATE_INDEX]);
+            HealthList.addPeriod(newPeriod);
+            Output.printAddPeriod(newPeriod);
+        }
     }
 
     /**
@@ -245,7 +260,7 @@ public class Parser {
     public static String[] splitPeriodInput(String input) throws CustomExceptions.InsufficientInput,
             CustomExceptions.InvalidInput {
         if (!input.contains(HealthConstant.START_FLAG)
-                || !input.contains(HealthConstant.END_FLAG)) {
+                || (!input.contains(HealthConstant.START_FLAG) && !input.contains(HealthConstant.END_FLAG))) {
             throw new CustomExceptions.InsufficientInput(ErrorConstant.INSUFFICIENT_PERIOD_PARAMETERS_ERROR);
         }
 
@@ -253,13 +268,20 @@ public class Parser {
             throw new CustomExceptions.InvalidInput(ErrorConstant.TOO_MANY_SLASHES_ERROR);
         }
 
-        String [] results = new String[HealthConstant.NUM_PERIOD_PARAMETERS];
-        results[HealthConstant.PERIOD_START_DATE_INDEX] = extractSubstringFromSpecificIndex(input,
-                HealthConstant.START_FLAG).trim();
-        results[HealthConstant.PERIOD_END_DATE_INDEX] = extractSubstringFromSpecificIndex(input,
-                HealthConstant.END_FLAG).trim();
+        String[] results = new String[HealthConstant.NUM_PERIOD_PARAMETERS];
+
+        if (input.contains(HealthConstant.START_FLAG) && input.contains(HealthConstant.END_FLAG)) {
+            results[HealthConstant.PERIOD_START_DATE_INDEX] = extractSubstringFromSpecificIndex(input,
+                    HealthConstant.START_FLAG).trim();
+            results[HealthConstant.PERIOD_END_DATE_INDEX] = extractSubstringFromSpecificIndex(input,
+                    HealthConstant.END_FLAG).trim();
+        } else if (input.contains(HealthConstant.START_FLAG) && !input.contains(HealthConstant.END_FLAG)) {
+            results[HealthConstant.PERIOD_START_DATE_INDEX] = extractSubstringFromSpecificIndex(input,
+                    HealthConstant.START_FLAG).trim();
+        }
         return results;
     }
+
 
     /**
      * Parses input for Prediction command.

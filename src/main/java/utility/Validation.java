@@ -4,9 +4,12 @@ import constants.ErrorConstant;
 import constants.HealthConstant;
 import constants.UiConstant;
 import constants.WorkoutConstant;
+import health.HealthList;
+
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Represents the validation class used to validate all inputs for PulsePilot.
@@ -47,7 +50,7 @@ public class Validation {
      * Validates the delete input details.
      *
      * @param deleteDetails A list containing the details for the delete command.
-     * @throws CustomExceptions.InvalidInput If the details specified are invalid.
+     * @throws CustomExceptions.InvalidInput      If the details specified are invalid.
      * @throws CustomExceptions.InsufficientInput If empty strings are used.
      */
     public static void validateDeleteInput(String[] deleteDetails) throws CustomExceptions.InvalidInput,
@@ -127,39 +130,68 @@ public class Validation {
      */
     public static void validatePeriodInput(String[] periodDetails) throws CustomExceptions.InvalidInput,
             CustomExceptions.InsufficientInput {
+
+        //ensures no empty parameters
         if (isEmptyParameterPresent(periodDetails)) {
             throw new CustomExceptions.InsufficientInput(ErrorConstant.INSUFFICIENT_PERIOD_PARAMETERS_ERROR);
         }
 
+        //checks start date is valid
         try {
             validateDateInput(periodDetails[HealthConstant.PERIOD_START_DATE_INDEX]);
         } catch (CustomExceptions.InvalidInput e) {
             throw new CustomExceptions.InvalidInput(ErrorConstant.INVALID_START_DATE_ERROR
                     + e.getMessage());
         }
+
+        //if end date is present, check end date's validity
         try {
-            validateDateInput(periodDetails[HealthConstant.PERIOD_END_DATE_INDEX]);
+            if (periodDetails[HealthConstant.PERIOD_END_DATE_INDEX] != null) {
+                validateDateInput(periodDetails[HealthConstant.PERIOD_END_DATE_INDEX]);
+            }
         } catch (CustomExceptions.InvalidInput e) {
             throw new CustomExceptions.InvalidInput(ErrorConstant.INVALID_END_DATE_ERROR
                     + e.getMessage());
         }
 
-        validateDateNotAfterToday(periodDetails[HealthConstant.PERIOD_START_DATE_INDEX]);
-        validateDateNotAfterToday(periodDetails[HealthConstant.PERIOD_END_DATE_INDEX]);
+        int sizeOfPeriodList = HealthList.getPeriodsSize();
 
+        //if period list is not empty
+        if (sizeOfPeriodList >= UiConstant.MINIMUM_PERIOD_COUNT) {
+            LocalDate latestPeriodEndDate =
+                    Objects.requireNonNull(HealthList.getPeriod(sizeOfPeriodList - 1)).getEndDate();
+            //checks if new input's start date tallies with the existing latest start date or end date is not empty
+            validateStartDatesTally(periodDetails[HealthConstant.PERIOD_START_DATE_INDEX],
+                    sizeOfPeriodList, latestPeriodEndDate, periodDetails);
+            //checks if start date is after the latest period input in list
+            validateDateAfterLatestPeriodInput(
+                    periodDetails[HealthConstant.PERIOD_START_DATE_INDEX], latestPeriodEndDate);
+        }
+
+        //checks start date not after today's date
+        validateDateNotAfterToday(periodDetails[HealthConstant.PERIOD_START_DATE_INDEX]);
+
+        //converts start date
         LocalDate startDate = Parser.parseDate(periodDetails[HealthConstant.PERIOD_START_DATE_INDEX]);
-        LocalDate endDate = Parser.parseDate(periodDetails[HealthConstant.PERIOD_END_DATE_INDEX]);
-        if (startDate.isAfter(endDate)) {
-            throw new CustomExceptions.InvalidInput(ErrorConstant.PERIOD_END_BEFORE_START_ERROR);
+
+        //if end date is present, check end date is not after today's date and start date
+        if (periodDetails[HealthConstant.PERIOD_END_DATE_INDEX] != null) {
+            validateDateNotAfterToday(periodDetails[HealthConstant.PERIOD_END_DATE_INDEX]);
+            LocalDate endDate = Parser.parseDate(periodDetails[HealthConstant.PERIOD_END_DATE_INDEX]);
+
+            if (startDate.isAfter(endDate)) {
+                throw new CustomExceptions.InvalidInput(ErrorConstant.PERIOD_END_BEFORE_START_ERROR);
+            }
         }
     }
 
     //@@author JustinSoh
+
     /**
      * Validates the details for adding a Run.
      *
      * @param runDetails A list containing Run details.
-     * @throws CustomExceptions.InvalidInput If the details specified are invalid.
+     * @throws CustomExceptions.InvalidInput      If the details specified are invalid.
      * @throws CustomExceptions.InsufficientInput If empty strings are used.
      */
     public static void validateRunInput(String[] runDetails) throws CustomExceptions.InvalidInput,
@@ -191,7 +223,7 @@ public class Validation {
      * Validates the details for adding a Gym.
      *
      * @param gymDetails A list containing Gym details.
-     * @throws CustomExceptions.InvalidInput If the details specified are invalid.
+     * @throws CustomExceptions.InvalidInput      If the details specified are invalid.
      * @throws CustomExceptions.InsufficientInput If empty strings are used.
      */
     public static void validateGymInput(String[] gymDetails) throws CustomExceptions.InvalidInput,
@@ -223,7 +255,7 @@ public class Validation {
         if (!time.matches(UiConstant.VALID_TIME_REGEX)) {
             throw new CustomExceptions.InvalidInput(ErrorConstant.INVALID_ACTUAL_TIME_ERROR);
         }
-        String [] parts = time.split(UiConstant.SPLIT_BY_COLON);
+        String[] parts = time.split(UiConstant.SPLIT_BY_COLON);
         int hours = Integer.parseInt(parts[0]);
         int minutes = Integer.parseInt(parts[1]);
 
@@ -236,6 +268,7 @@ public class Validation {
     }
 
     //@@author JustinSoh
+
     /**
      * Validates the time used in HH:MM format.
      *
@@ -247,7 +280,7 @@ public class Validation {
                 !time.matches(UiConstant.VALID_TIME_WITH_HOURS_REGEX)) {
             throw new CustomExceptions.InvalidInput(ErrorConstant.INVALID_RUN_TIME_ERROR);
         }
-        String [] parts = time.split(UiConstant.SPLIT_BY_COLON);
+        String[] parts = time.split(UiConstant.SPLIT_BY_COLON);
         int hours = WorkoutConstant.NO_HOURS_PRESENT;
         int minutes;
         int seconds;
@@ -292,17 +325,18 @@ public class Validation {
         }
     }
     //@@author
+
     /**
      * Validates Appointment details entered.
      *
      * @param appointmentDetails List of strings representing Appointment details.
-     * @throws CustomExceptions.InvalidInput If there are any errors in the details entered.
+     * @throws CustomExceptions.InvalidInput      If there are any errors in the details entered.
      * @throws CustomExceptions.InsufficientInput If date, time, or description parameters are missing.
      */
     public static void validateAppointmentDetails(String[] appointmentDetails)
             throws CustomExceptions.InvalidInput, CustomExceptions.InsufficientInput {
         if (isEmptyParameterPresent(appointmentDetails)) {
-            throw new CustomExceptions.InsufficientInput( ErrorConstant
+            throw new CustomExceptions.InsufficientInput(ErrorConstant
                     .INSUFFICIENT_APPOINTMENT_PARAMETERS_ERROR);
         }
         validateDateInput(appointmentDetails[HealthConstant.APPOINTMENT_DATE_INDEX]);
@@ -324,7 +358,7 @@ public class Validation {
      * Only alphanumeric and space characters can be in the name.
      *
      * @param exerciseName The exercise name string.
-     * @throws CustomExceptions.InvalidInput If the details specified are invalid.
+     * @throws CustomExceptions.InvalidInput      If the details specified are invalid.
      * @throws CustomExceptions.InsufficientInput If empty strings are used.
      */
     //@@author JustinSoh
@@ -354,17 +388,17 @@ public class Validation {
         String[] weightsArray = weightsString.split(UiConstant.SPLIT_BY_COMMAS);
         ArrayList<Double> validatedWeightsArray = new ArrayList<>();
         try {
-            for(String weight: weightsArray){
+            for (String weight : weightsArray) {
                 double weightDouble = Double.parseDouble(weight);
-                if (weightDouble < WorkoutConstant.MIN_WEIGHT){
+                if (weightDouble < WorkoutConstant.MIN_WEIGHT) {
                     throw new CustomExceptions.InvalidInput(ErrorConstant.GYM_WEIGHT_POSITIVE_ERROR);
                 }
-                if (weightDouble % WorkoutConstant.WEIGHT_MULTIPLE != 0 ){
+                if (weightDouble % WorkoutConstant.WEIGHT_MULTIPLE != 0) {
                     throw new CustomExceptions.InvalidInput(ErrorConstant.INVALID_WEIGHT_VALUE_ERROR);
                 }
                 validatedWeightsArray.add(weightDouble);
             }
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             throw new CustomExceptions.InvalidInput(ErrorConstant.GYM_WEIGHT_DIGIT_ERROR);
         }
         return validatedWeightsArray;
@@ -375,7 +409,7 @@ public class Validation {
      *
      * @param input The user input string.
      * @return A list of validated parameters for adding a GymStation.
-     * @throws CustomExceptions.InvalidInput If the details specified are invalid.
+     * @throws CustomExceptions.InvalidInput      If the details specified are invalid.
      * @throws CustomExceptions.InsufficientInput If empty strings are used.
      */
     public static String[] splitAndValidateGymStationInput(String input) throws CustomExceptions.InvalidInput,
@@ -414,6 +448,7 @@ public class Validation {
     }
 
     //@@author rouvinerh
+
     /**
      * Validates whether the list of input details contains any empty strings. If it does, return false.
      * Otherwise, return true.
@@ -440,6 +475,50 @@ public class Validation {
         LocalDate date = Parser.parseDate(dateString);
         if (date.isAfter(LocalDate.now())) {
             throw new CustomExceptions.InvalidInput(ErrorConstant.DATE_IN_FUTURE_ERROR);
+        }
+    }
+
+    /**
+     * Validates whether the start date is before or equal to the end date of the latest period in the HealthList.
+     * Throws an error if it is.
+     *
+     * @param dateString The string representation of the date to be validated.
+     * @param latestPeriodEndDate The end date of the latest period in the HealthList.
+     * @throws CustomExceptions.InvalidInput If the date specified is not after the end date of the latest period.
+     */
+    public static void validateDateAfterLatestPeriodInput(String dateString, LocalDate latestPeriodEndDate)
+            throws CustomExceptions.InvalidInput {
+        LocalDate date = Parser.parseDate(dateString);
+
+        if (latestPeriodEndDate != null && (date.isBefore(latestPeriodEndDate) || date.isEqual(latestPeriodEndDate))) {
+            throw new CustomExceptions.InvalidInput(ErrorConstant.CURRENT_START_BEFORE_PREVIOUS_END);
+        }
+    }
+
+    /**
+     * Validates whether the specified start date matches the start date of the latest period in the HealthList
+     * and checks if end date exists.
+     *
+     * @param dateString          The string representation of the start date to be validated.
+     * @param sizeOfPeriodList    The size of the period list in the HealthList.
+     * @param latestPeriodEndDate The end date of the latest period in the HealthList.
+     * @param periodDetails       An array containing details of the current period input.
+     * @throws CustomExceptions.InvalidInput If the start date does not match the start date of the latest period
+     *                                        or if insufficient parameters are provided.
+     */
+    public static void validateStartDatesTally(String dateString, int sizeOfPeriodList, LocalDate latestPeriodEndDate,
+                                               String[] periodDetails) throws CustomExceptions.InvalidInput {
+        LocalDate date = Parser.parseDate(dateString);
+        LocalDate latestPeriodStartDate =
+                Objects.requireNonNull(HealthList.getPeriod(sizeOfPeriodList - 1)).getStartDate();
+
+        if (latestPeriodEndDate == null) {
+            if (!date.equals(latestPeriodStartDate)) {
+                throw new CustomExceptions.InvalidInput(ErrorConstant.INVALID_START_DATE_INPUT_ERROR);
+            }
+            if (periodDetails[HealthConstant.PERIOD_END_DATE_INDEX] == null) {
+                throw new CustomExceptions.InvalidInput(ErrorConstant.INSUFFICIENT_PERIOD_PARAMETERS_ERROR);
+            }
         }
     }
 }
