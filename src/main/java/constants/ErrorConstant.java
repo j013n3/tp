@@ -37,7 +37,7 @@ public class ErrorConstant {
 
     // Date errors
     public static final String INVALID_DATE_ERROR = "Invalid date format. Format is DD-MM-YYYY in integers. " +
-            "Make a valida date is entered (take note of leap years)!";
+            "Make sure a valid date is entered (take note of leap years)!";
     public static final String INVALID_YEAR_ERROR = "Year has to be after 1967!";
     public static final String INVALID_LEAP_YEAR_ERROR = "29 Feb does not exist in this year!";
     public static final String PARSING_DATE_ERROR ="Error parsing date!";
@@ -132,8 +132,9 @@ public class ErrorConstant {
             "Height and weight should be 2 decimal place positive numbers!";
 
     // PERIOD ERRORS
-    public static final String INSUFFICIENT_PERIOD_PARAMETERS_ERROR = "Insufficient parameters for period! " +
-            "Example input: /h:period /start:startDate /end:endDate"
+    public static final String INSUFFICIENT_PERIOD_PARAMETERS_ERROR = "Insufficient parameters for period! "
+            + System.lineSeparator()
+            + "Example inputs: '/h:period /start:startDate' or '/h:period /start:startDate /end:endDate'"
             + System.lineSeparator()
             + "Only input what is required! Additional characters between flags will cause errors.";
     public static final String NULL_PERIOD_ERROR = "Period object cannot be null.";
@@ -145,7 +146,20 @@ public class ErrorConstant {
     public static final String PERIOD_LIST_UNCLEARED_ERROR = "Period list is not cleared.";
     public static final String DATE_IN_FUTURE_ERROR = "Date specified cannot be later than today's date.";
     public static final String PERIOD_END_BEFORE_START_ERROR = "Start date of period must be before end date.";
-    public static final String UNABLE_TO_MAKE_PREDICTIONS_ERROR = "Insufficient period cycles to make prediction.";
+    public static final String UNABLE_TO_MAKE_PREDICTIONS_ERROR = "Insufficient period cycles to make prediction."
+            + System.lineSeparator()
+            + "Enter at least four period inputs for prediction of the next period's start date.";
+    public static final String CURRENT_START_BEFORE_PREVIOUS_END =
+            "The start date of your current period input needs to be after the end date of your previous period input."
+            + System.lineSeparator()
+            + "You may enter 'history /item:period' to check your period history.";
+    public static final String INVALID_START_DATE_INPUT_ERROR = "Error is resulted by two possible reasons. "
+        +System.lineSeparator()
+        + "1. End date for previous period is still empty. " +
+        "Add an end date before starting a new period input!"
+        + System.lineSeparator()
+        + "2. Start dates of current period do not tally. " +
+        "Enter 'history /item:period' to view existing period inputs.";
 
     // APPOINTMENT ERRORS
     public static final String INSUFFICIENT_APPOINTMENT_PARAMETERS_ERROR = "Insufficient parameters for period! " +

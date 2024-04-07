@@ -19,6 +19,7 @@ public class UiConstant {
     public static final String LINE = " | ";
     public static final String PARTITION_LINE = "____________________________________________________________";
     public static final String EMPTY_STRING = "";
+    public static final String FULL_STOP = ".";
 
     // Regex
     public static final String VALID_DATE_REGEX = "^\\d{2}-\\d{2}-\\d{4}$";
@@ -60,10 +61,6 @@ public class UiConstant {
     public static final Integer MIN_RUNTIME_ARRAY_LENGTH = 2;
     public static final int NUM_SECONDS_IN_MINUTE = 60;
     public static final int NUM_SECONDS_IN_HOUR = 3600;
-    public static final Integer MIN_DAY = 1;
-    public static final Integer MAX_DAY = 31;
-    public static final Integer MIN_MONTH = 1;
-    public static final Integer MAX_MONTH = 12;
     public static final Integer MIN_MINUTES = 0;
     public static final Integer MAX_MINUTES = 59;
     public static final Integer MIN_SECONDS = 0;
@@ -73,6 +70,7 @@ public class UiConstant {
     public static final double POWER_OF_TWO = 2.0;
     public static final double ROUNDING_FACTOR = 100.0;
     public static final int NUM_DELETE_PARAMETERS = 2;
+    public static final int MINIMUM_PERIOD_COUNT = 1;
 
     // SPLIT INDEX
     public static final int DELETE_ITEM_STRING_INDEX = 0;
